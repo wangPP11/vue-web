@@ -4,9 +4,9 @@ import router from './router';
 import store from './store';
 import './registerServiceWorker';
 import axios from "./config/axios.tool";
+import vueAxios from  "vue-axios";
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import vueAxios from  "vue-axios";
 
 Vue.config.productionTip = false;
 Vue.use(vueAxios, axios);
