@@ -2,7 +2,7 @@
     <el-form :model="user" ref="loginForm" :rules="rules" class="login-container" label-position="left" label-width="0px" v-loading="loading">
         <h3 class="login_title">系统登录</h3>
         <el-form-item prop="phone">
-            <el-input type="text" v-model="user.phone" auto-complete="off" placeholder="账号"></el-input>
+            <el-input type="text" v-model="user.name" auto-complete="off" placeholder="账号"></el-input>
         </el-form-item>
         <el-form-item prop="password">
             <el-input type="password" v-model="user.password" auto-complete="off" placeholder="密码"></el-input>
@@ -23,7 +23,7 @@
         @Prop() private msg!: string;
         public user:User = new User("","");
         rules:object = {
-            phone: [{required: true, message: '请输入用户名', trigger: 'blur'}],
+            name: [{required: true, message: '请输入用户名', trigger: 'blur'}],
             password: [{required: true, message: '请输入密码', trigger: 'blur'}]
         }
         loading:boolean = false;
@@ -35,14 +35,13 @@
             // 密码需要加密
             localStorage.clear();
 
-            _this.user.setPassword(Md5.hashStr(_this.user.getPassword()).toString())
+            //_this.user.setPassword(Md5.hashStr(_this.user.getPassword()).toString())
             // 登录
-            _this.axios.post('/v1/account/login', _this.user)
+            _this.axios.post('/login', _this.user)
             .then(resp => {
                 _this.loading = false;
                 // 设置全局的用户信息
-                localStorage.setItem("token", Base64.encode("Basic:" + resp.data.accessToken));
-                localStorage.setItem("refreshToken", Base64.encode("Basic:" + resp.data.refreshToken));
+                localStorage.setItem("token", resp.data.session.id);
                 localStorage.setItem("username", resp.data.user.name)
                 _this.$router.replace({path: '/home'});
             })

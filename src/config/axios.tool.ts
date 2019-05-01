@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {Message} from 'element-ui'
 
-axios.defaults.baseURL = "http://localhost:8080/webapi";  // 默认地址
+axios.defaults.baseURL = "/api/";  // 默认地址
 
 //整理数据
 axios.defaults.transformRequest = function (data) {
@@ -15,7 +15,7 @@ axios.interceptors.request.use(config => {
         config.headers['Accept'] = 'application/json';
         config.headers['Content-Type'] = 'application/json;charset=UTF-8';
         //判断是否存在token，如果存在的话，则每个http header都加上token
-        var token = localStorage.getItem("token");
+        const token = localStorage.getItem("token");
         if(token != undefined){
             config.headers['Authorization'] = token;
         }

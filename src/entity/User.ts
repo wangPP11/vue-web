@@ -1,13 +1,13 @@
 export class User {
-    phone!:string;
+    name!:string;
     password!:string;
 
-    public getPhone(): string {
-        return this.phone;
+    public  getName():string{
+        return this.name;
     }
 
-    public setPhone(value: string) {
-        this.phone = value;
+    public  setName(name:string): void{
+        this.name = name;
     }
 
     public getPassword(): string {
@@ -18,8 +18,8 @@ export class User {
         this.password = value;
     }
 
-    constructor(phone: string, password: string) {
-        this.phone = phone;
+    constructor(name: string, password: string) {
+        this.name = name;
         this.password = password;
     }
 }

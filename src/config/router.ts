@@ -15,9 +15,9 @@ export default new Router({
     },
     { path: '/home', component: Home, name: '系统模块', /*iconCls: 'fa fa-cog',*/
       children: [
-        { path: '/menu',  name: '菜单管理', component: () => import('../views/Login.vue')},
-        { path: '/role',  name: '角色管理', component: () => import('../views/Login.vue')},
-        { path: '/user',  name: '用户管理', component: () => import('../views/Login.vue')}
+        { path: '/sys/menu',  name: '菜单管理', component: () => import('../views/Login.vue')},
+        { path: '/sys/role',  name: '角色管理', component: () => import('../views/Login.vue')},
+        { path: '/sys/user',  name: '用户管理', component: () => import('../views/Login.vue')}
       ]
     },
   ],
