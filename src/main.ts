@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import App from './App.vue';
-import router from './router';
-import store from './store';
-import './registerServiceWorker';
+import router from './config/router';
+import store from './config/store';
+import './config/registerServiceWorker';
 import axios from "./config/axios.tool";
 import vueAxios from  "vue-axios";
 import ElementUI from 'element-ui';
