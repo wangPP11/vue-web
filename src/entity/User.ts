@@ -1,7 +1,8 @@
 export class User {
+
     name!:string;
     password!:string;
-
+    kaptcha!:string;
     public  getName():string{
         return this.name;
     }
@@ -14,12 +15,20 @@ export class User {
         return this.password;
     }
 
-    public setPassword(value: string) {
-        this.password = value;
+    public setPassword(password: string) {
+        this.password = password;
     }
 
-    constructor(name: string, password: string) {
+    public getKaptcha():string{
+        return this.kaptcha;
+    }
+
+    public setKaptcha(kaptcha: string){
+        this.kaptcha = kaptcha;
+    }
+    constructor(name: string, password: string, kaptcha: string) {
         this.name = name;
         this.password = password;
+        this.kaptcha = kaptcha;
     }
 }

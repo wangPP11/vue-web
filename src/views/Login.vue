@@ -7,8 +7,17 @@
         <el-form-item prop="password">
             <el-input type="password" v-model="user.password" auto-complete="off" placeholder="密码"></el-input>
         </el-form-item>
-        <el-form-item style="width: 100%">
-            <el-button type="primary" @click="submitClick" style="width: 100%">登录</el-button>
+        <el-form-item prop="kaptcha">
+            <el-input type="text" v-model="user.kaptcha" auto-complete="off" placeholder="验证码"></el-input>
+        </el-form-item>
+        <el-form-item style="width: 100%" class="login_remember">
+            <el-image :src="kaptcha" @click="refreshCode" alt="加载失败" >
+                <div slot="placeholder" class="image-slot">
+                    <i class="el-icon-loading"></i>
+                </div>
+            </el-image>
+            <el-link class="rele_code" type="primary" @click="refreshCode">刷新</el-link>
+            <el-button class="login_button" type="primary" @click="submitClick">登录</el-button>
         </el-form-item>
     </el-form>
 </template>
@@ -19,14 +28,21 @@
     import {Base64} from "@/utils/Base64";
     import {Md5} from 'ts-md5/dist/md5';
     @Component({})
-    export default class HelloWorld extends Vue {
+    export default class Login extends Vue {
         @Prop() private msg!: string;
-        public user:User = new User("","");
+        public user:User = new User("","","");
         rules:object = {
             name: [{required: true, message: '请输入用户名', trigger: 'blur'}],
-            password: [{required: true, message: '请输入密码', trigger: 'blur'}]
+            password: [{required: true, message: '请输入密码', trigger: 'blur'}],
+            kaptcha: [{required: true, message: '请输入验证码', trigger: 'blur'}],
         }
         loading:boolean = false;
+
+        kaptcha: string = "http://localhost:10000/vueweb/captcha.jpg?t=" + new Date().getTime();
+
+        refreshCode(): void {
+            this.kaptcha = "http://localhost:10000/vueweb/captcha.jpg?t=" + new Date().getTime();
+        }
 
         submitClick(): void {
             const _this = this;
@@ -36,8 +52,9 @@
             localStorage.clear();
 
             //_this.user.setPassword(Md5.hashStr(_this.user.getPassword()).toString())
+            _this.axios.a
             // 登录
-            _this.axios.post('/login', _this.user)
+            _this.axios.post('/login',, _this.user)
             .then(resp => {
                 _this.loading = false;
                 // 设置全局的用户信息
@@ -67,7 +84,15 @@
     }
 
     .login_remember {
-        margin: 0px 0px 35px 0px;
         text-align: left;
+    }
+    .login_button {
+        position: absolute;
+        text-align: right;
+        right: 0px;
+    }
+    .rele_code{
+        position: absolute;
+        right: 100px;
     }
 </style>
