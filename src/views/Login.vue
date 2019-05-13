@@ -38,10 +38,10 @@
         }
         loading:boolean = false;
 
-        kaptcha: string = "http://localhost:10000/vueweb/captcha.jpg?t=" + new Date().getTime();
+        kaptcha: string = "http://www.ping-w.com/vueweb/captcha.jpg?t=" + new Date().getTime();
 
         refreshCode(): void {
-            this.kaptcha = "http://localhost:10000/vueweb/captcha.jpg?t=" + new Date().getTime();
+            this.kaptcha = "http://www.ping-w.com/vueweb/captcha.jpg?t=" + new Date().getTime();
         }
 
         submitClick(): void {
@@ -52,9 +52,9 @@
             localStorage.clear();
 
             //_this.user.setPassword(Md5.hashStr(_this.user.getPassword()).toString())
-            _this.axios.a
+
             // 登录
-            _this.axios.post('/login',, _this.user)
+            _this.axios.post('/login', _this.user)
             .then(resp => {
                 _this.loading = false;
                 // 设置全局的用户信息
