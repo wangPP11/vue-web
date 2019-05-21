@@ -62,9 +62,12 @@ export default class Home extends Vue {
     }
     // 获取菜单
     const _this = this;
-    _this.axios.get("/userMenu")
-    .then(rest =>{
-      _this.menus = rest.data.menus;
+    _this.axios.get("/menu/userMenu")
+    .then((rest:any) =>{
+      if (rest.code == 0) {
+        _this.menus = rest.data.menus;
+        localStorage.setItem("permissionList", JSON.stringify(rest.data.permissions))
+      }
     })
   }
   handleCommand(command:string):void{

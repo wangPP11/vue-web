@@ -25,8 +25,6 @@
 <script lang="ts">
     import { Component, Prop, Vue } from 'vue-property-decorator';
     import {User} from "@/entity/User";
-    import {Base64} from "@/utils/Base64";
-    import {Md5} from 'ts-md5/dist/md5';
     @Component({})
     export default class Login extends Vue {
         @Prop() private msg!: string;
@@ -37,11 +35,11 @@
             kaptcha: [{required: true, message: '请输入验证码', trigger: 'blur'}],
         }
         loading:boolean = false;
-
-        kaptcha: string = "http://www.ping-w.com/vueweb/captcha.jpg?t=" + new Date().getTime();
+        // http://www.ping-w.com/vueweb
+        kaptcha: string = "http://localhost:8080/api/captcha.jpg?t=" + new Date().getTime();
 
         refreshCode(): void {
-            this.kaptcha = "http://www.ping-w.com/vueweb/captcha.jpg?t=" + new Date().getTime();
+            this.kaptcha = "http://localhost:8080/api/captcha.jpg?t=" + new Date().getTime();
         }
 
         submitClick(): void {
