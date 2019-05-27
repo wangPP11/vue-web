@@ -48,7 +48,7 @@
           @size-change="pageSizeChange"
           @current-change="currentPageChange"
           :current-page="queryObj.currentPage"
-          :page-sizes="[10, 20, 30, 40]"
+          :page-sizes="[5, 10, 20, 30, 40]"
           :page-size="queryObj.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="queryObj.total">
@@ -56,44 +56,11 @@
     </div>
 
     <div v-show="!isList">
-      <el-form ref="menu" :model="role" :rules="rules" label-width="80px" label-position="right"
+      <el-form ref="role" :model="role" :rules="rules" label-width="80px" label-position="right"
                class="demo-ruleForm" size="mini">
-        <el-form-item prop="name" label="菜单名称">
+        <el-form-item prop="name" label="角色名称">
           <el-col :span="10">
             <el-input v-model="role.name"></el-input>
-          </el-col>
-        </el-form-item>
-
-        <el-form-item label="父级角色">
-          <el-col :span="10">
-            <el-input v-model="role.parentName" readonly @focus="dialogFormVisible = true"></el-input>
-            <el-dialog title="选择父级角色" width="30%"
-                       :close-on-click-modal="false"
-                       :close-on-press-escape="false"
-                       :show-close="false"
-                       :visible.sync="dialogFormVisible">
-              <el-tree
-                  :data="this.allRoles"
-                  @node-click="setParentId"
-                  node-key="id"
-                  :accordion=true
-                  :highlight-current=true
-                  :default-expanded-keys=[role.parentId]
-                  :current-node-key=role.parentId
-                  :props="{children: 'childs', label: 'name'}">
-              </el-tree>
-              <div slot="footer" class="dialog-footer">
-                <el-button @click="role.parentId=0;role.parentName='';dialogFormVisible = false;">取消
-                </el-button>
-                <el-button type="primary" @click="dialogFormVisible = false">确定</el-button>
-              </div>
-            </el-dialog>
-          </el-col>
-        </el-form-item>
-
-        <el-form-item label="角色菜单">
-          <el-col :span="10">
-
           </el-col>
         </el-form-item>
 
@@ -112,6 +79,7 @@
 <script lang="ts">
   import {Component, Prop, Vue} from 'vue-property-decorator';
   import {Role} from "@/entity/Role";
+  import {Menu} from "@/entity/Menu";
   import {Query} from "@/utils/Query";
   import {StringUtils} from  "@/utils/StringUtils"
   @Component({})
@@ -126,10 +94,10 @@
     loading: boolean = false;
     isList: boolean = true;
     visible2: boolean = false;
-    dialogFormVisible: boolean = false;
     roles: Array<Role> = [];
     selectRoles: Array<Role> = [];
     allRoles: Array<Role> = [];
+    allMenus: Array<Menu> = [];
     // 初始化菜单信息
     role: Role = new Role();
     button: object = {
@@ -143,6 +111,10 @@
       // 设置默认的搜索类型
       this.queryObj.type = "name";
       this.loadList();
+      this.allMenu().then(()=>{
+        console.log("111")
+      })
+      this.allRole();
     }
     // 加载列表数据
     loadList():void {
@@ -187,15 +159,126 @@
     add():void{
       this.isList = false;
       this.role = new Role();
+      //this.allRole();
     }
     // 修改
     update(index:number, row: Role):void{
       this.isList = false;
       this.role = row;
+      //this.allRole();
     }
 
     submitRole (role:string): void {
+      let _this = this;
+      let el: any = this.$refs[role];
+      el.validate((valid: any) => {
+        if (valid) {
+          _this.loading = true;
+          console.log(_this.role.id);
+          if (_this.role.id) {
+            _this.axios.put("/role/update",_this.role)
+                .then((resp: any) => {
+                  _this.loading = false;
+                  if (resp.code == 0){
+                    _this.$message.success("修改成功了！");
+                    _this.loadList();
+                  }
+                })
+          }else{
+            _this.axios.post("/role/save",_this.role)
+                .then((resp: any)=>{
+                  _this.loading = false;
+                  if(resp.code == 0) {
+                    _this.$message.success("添加成功了！")
+                    _this.loadList();
+                  };
+                })
+          }
+        }else{
+          this.$message.error("错误的提交");
+          return;
+        }
+      })
+    }
 
+    notSubmitRole (role:string): void{
+      this.isList = true;
+      this.role = new Role();
+    }
+
+    remove():void{
+      let _this = this;
+      _this.visible2 = false;
+      if (_this.selectRoles.length == 0) {
+        _this.$message.error("请选择需要删除的角色");
+        return;
+      }
+      let arr = new Array<number>();
+      _this.selectRoles.forEach((ele: Role)=>{
+        arr.push(ele.id)
+      })
+      _this.axios.delete("/role/delete",{data:arr})
+          .then((resp: any)=>{
+            if (resp.code == 0){
+              _this.$message.success("删除成功了！");
+              _this.loadList();
+            }
+          })
+    }
+
+    closeRole(idnex:number, row: any):void{
+      let _this = this;
+      _this.$alert("确认删除这个菜单吗？", "友情提示", {
+        confirmButtonText: "确认",
+        callback: action => {
+          _this.axios.delete("/role/delete", {data: [row.id]})
+              .then((resp: any) => {
+                if (resp.code == 0) {
+                  _this.$message.success("删除成功了！");
+                  if (_this.roles.length <= 1 && _this.queryObj.currentPage > 1) {
+                    _this.queryObj.currentPage = _this.queryObj.currentPage - 1;
+                  }
+                  _this.loadList();
+                }
+              })
+        }
+      })
+    }
+
+    setParentId(data: Role,node: any, eml:any): void {
+      this.role.parenId = data.id;
+      this.role.parentName = data.name;
+    }
+
+    // 全部菜单
+    allMenu():Promise<any>{
+      let _this = this;
+      return new Promise(function (resolve, reject) {
+        let allMenus = localStorage.getItem("meusAll");
+        if (allMenus!=null && StringUtils.isNotBlank(allMenus)) {
+          _this.allMenus = JSON.parse(allMenus.toString());
+          if (_this.allMenus.length != 0) {
+            resolve(_this.allMenus);
+          }
+        }else{
+          _this.axios.get("/menu/perms")
+              .then((resp: any)=>{
+                _this.allMenus = resp.data;
+                localStorage.setItem("meusAll", JSON.stringify(resp.data));
+                resolve(_this.allMenus);
+              })
+        }
+      });
+    }
+
+    allRole ():void {
+      let _this = this;
+      _this.axios.get("/role/select")
+          .then((resp: any)=>{
+            if (resp.code == 0) {
+              _this.allRoles = resp.data;
+            }
+          })
     }
 
   }
