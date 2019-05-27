@@ -53,21 +53,25 @@
 
             // 登录
             _this.axios.post('/login', _this.user)
-            .then(resp => {
+            .then((resp: any) => {
                 _this.loading = false;
-                // 设置全局的用户信息
-                localStorage.setItem("token", resp.data.session.id);
-                localStorage.setItem("username", resp.data.user.name)
-                _this.$router.replace({path: '/home'});
+                if (resp.code == 0){
+                    // 设置全局的用户信息
+                    localStorage.setItem("token", resp.data.session.id);
+                    localStorage.setItem("username", resp.data.user.name)
+                    _this.$router.replace({path: '/home'});
+                }
             })
         }
     }
 </script>
 <style scoped lang="less">
     .login-container {
+        position: relative;
+        left: 33%;
+        top: 90px;
         border-radius: 15px;
         background-clip: padding-box;
-        margin: 180px auto;
         width: 350px;
         padding: 35px 35px 15px 35px;
         background: #fff;

@@ -9,6 +9,8 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import 'element-ui/lib/theme-chalk/fonts/element-icons.ttf';
 import 'element-ui/lib/theme-chalk/fonts/element-icons.woff';
+import 'bootstrap/fonts/glyphicons-halflings-regular.ttf';
+import 'bootstrap/fonts/glyphicons-halflings-regular.woff';
 
 Vue.config.productionTip = false;
 Vue.use(vueAxios, axios);

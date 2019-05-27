@@ -1,21 +1,22 @@
 export class Menu {
     id!: number;
     name!: string;
-    type!: string;
+    type!: number;
     permission!: string;
     url!: string;
-    parentId!: string;
+    parentId!: number;
     parentName!: string;
     icon!: string;
     childs!: Array<Menu>;
 
-    constructor(name: string, type: string, permission: string, url: string, parentId: string, parentName: string) {
-        this.name = name;
-        this.type = type;
-        this.permission = permission;
-        this.url = url;
-        this.parentId = parentId;
-        this.parentName = parentName;
+    constructor() {
+        this.name = "";
+        this.type = 0;
+        this.permission = "";
+        this.url = "";
+        this.parentId = 0;
+        this.parentName = "";
         this.icon = "";
+        this.childs = [];
     }
 }

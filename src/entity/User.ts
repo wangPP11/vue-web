@@ -1,8 +1,8 @@
 export class User {
 
-    name!:string;
-    password!:string;
-    kaptcha!:string;
+    private name!:string;
+    private password!:string;
+    private kaptcha!:string;
 
     constructor(name: string, password: string, kaptcha: string) {
         this.name = name;

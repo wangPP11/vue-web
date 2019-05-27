@@ -22,11 +22,11 @@
           <template v-for="(item,index) in this.menus" v-if="!item.hidden">
             <el-submenu :index="index+''" :key="index">
               <template slot="title">
-                <i :class="item.icon"></i>
+                <span :class="item.icon"></span>
                 <span>{{item.name}}</span>
               </template>
               <el-menu-item v-for="child in item.childs" :index="child.url" :key="child.url">
-                <i :class="child.icon"></i>
+                <span :class="child.icon"></span>
                 <span>{{child.name}}</span>
               </el-menu-item>
             </el-submenu>
