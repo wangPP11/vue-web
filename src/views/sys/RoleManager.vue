@@ -23,7 +23,7 @@
           </el-popover>
         </el-col>
       </el-row>
-      <div class="margin-bottom-10"></div>
+      <div class="margin-bottom"></div>
       <el-table :data="roles" style="width: 100%" height="590" border
                 @sort-change="solrLoad"
                 @selection-change="selectRow">
@@ -58,12 +58,55 @@
     <div v-show="!isList">
       <el-form ref="role" :model="role" :rules="rules" label-width="80px" label-position="right"
                class="demo-ruleForm" size="mini">
+        <el-form-item label="父级角色">
+          <el-col :span=10>
+            <el-input v-model="role.parentName" readonly @focus="dialogFormVisible = true"></el-input>
+            <el-dialog title="选择父级角色" width="30%"
+                       :close-on-click-modal="false"
+                       :close-on-press-escape="false"
+                       :show-close="false"
+                       :visible.sync="dialogFormVisible">
+
+                <el-tree :data="allRoles"
+                         @node-click="setParentId"
+                         node-key="id"
+                         ref="parentId"
+                         :accordion=true
+                         :highlight-current=true
+                         :default-expanded-keys=[role.parentId]
+                         :current-node-key=role.parentId
+                         :props="{children:'childs', label:'name'}">
+                </el-tree>
+
+                <div slot="footer" class="dialog-footer">
+                  <el-button @click="role.parentId=0;role.parentName='';dialogFormVisible = false;">取消
+                  </el-button>
+                  <el-button type="primary" @click="dialogFormVisible = false">确定</el-button>
+                </div>
+
+            </el-dialog>
+          </el-col>
+        </el-form-item>
+
         <el-form-item prop="name" label="角色名称">
           <el-col :span="10">
             <el-input v-model="role.name"></el-input>
           </el-col>
         </el-form-item>
 
+        <el-form-item label="角色菜单">
+          <el-col :span=10>
+              <el-tree
+                    :data="menus"
+                    @check="getMenuIds"
+                    show-checkbox
+                    ref="menuIds"
+                    :accordion=true
+                    node-key="id"
+                    :props="{children: 'childs', label: 'name'}">
+              </el-tree>
+          </el-col>
+        </el-form-item>
 
         <el-form-item>
           <el-col :span="10">
@@ -94,10 +137,12 @@
     loading: boolean = false;
     isList: boolean = true;
     visible2: boolean = false;
+    dialogFormVisible: boolean = false;
+
     roles: Array<Role> = [];
     selectRoles: Array<Role> = [];
     allRoles: Array<Role> = [];
-    allMenus: Array<Menu> = [];
+    menus: Array<Menu> = [];
     // 初始化菜单信息
     role: Role = new Role();
     button: object = {
@@ -111,15 +156,14 @@
       // 设置默认的搜索类型
       this.queryObj.type = "name";
       this.loadList();
-      this.allMenu().then(()=>{
-        console.log("111")
-      })
+      this.allMenu();
       this.allRole();
     }
     // 加载列表数据
     loadList():void {
       const _this = this;
-      _this.loading = true;
+      _this.isList = true;
+      _this.loading = true; 
       _this.axios.get("/role/list",{params: _this.queryObj})
           .then(resp=> {
             _this.loading = false;
@@ -159,13 +203,11 @@
     add():void{
       this.isList = false;
       this.role = new Role();
-      //this.allRole();
     }
     // 修改
     update(index:number, row: Role):void{
       this.isList = false;
       this.role = row;
-      //this.allRole();
     }
 
     submitRole (role:string): void {
@@ -174,7 +216,6 @@
       el.validate((valid: any) => {
         if (valid) {
           _this.loading = true;
-          console.log(_this.role.id);
           if (_this.role.id) {
             _this.axios.put("/role/update",_this.role)
                 .then((resp: any) => {
@@ -246,29 +287,42 @@
     }
 
     setParentId(data: Role,node: any, eml:any): void {
-      this.role.parenId = data.id;
+      this.role.parentId = data.id;
       this.role.parentName = data.name;
     }
 
-    // 全部菜单
-    allMenu():Promise<any>{
-      let _this = this;
-      return new Promise(function (resolve, reject) {
-        let allMenus = localStorage.getItem("meusAll");
-        if (allMenus!=null && StringUtils.isNotBlank(allMenus)) {
-          _this.allMenus = JSON.parse(allMenus.toString());
-          if (_this.allMenus.length != 0) {
-            resolve(_this.allMenus);
-          }
-        }else{
-          _this.axios.get("/menu/perms")
-              .then((resp: any)=>{
-                _this.allMenus = resp.data;
-                localStorage.setItem("meusAll", JSON.stringify(resp.data));
-                resolve(_this.allMenus);
-              })
+    getMenuIds(data: any, eml:any){
+      let ele:any = this.$refs["menuIds"];
+      let checkedNodes:Array<Menu> = ele.getCheckedNodes();
+      let menuIds = new Array<number>();
+      checkedNodes.forEach((ele:Menu)=>{
+        menuIds.push(ele.id);
+        let isAdd: boolean = true;
+        if(ele.parentId != 0){
+          menuIds.forEach(menuId=>{
+            if (menuId == ele.parentId) {
+              isAdd = false;
+            }
+          })
+        } else {
+          isAdd = false;
         }
-      });
+        if (isAdd){
+          menuIds.push(ele.parentId)
+        }
+      })
+      this.role.menuIds = menuIds;
+    }
+
+    // 全部菜单
+    allMenu(): void {
+      let _this = this;
+      _this.axios.get("/menu/perms")
+      .then((resp: any)=>{
+        if (resp.code == 0) {
+          _this.menus = resp.data;
+        }
+      })
     }
 
     allRole ():void {
@@ -288,5 +342,9 @@
   .el-col{
     margin-bottom: 10px;
     margin-top: 10px;
+  }
+  .demo-ruleForm{
+    padding-top: 20px;
+    padding-left: 20px;
   }
 </style>
