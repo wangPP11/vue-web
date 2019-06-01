@@ -6,7 +6,7 @@ export class StringUtils {
     }
 
     static isNotEntity(s:string):boolean {
-        return this.isEntity(s);
+        return !this.isEntity(s);
     }
 
     static isBlank(s:any):boolean {
@@ -16,7 +16,7 @@ export class StringUtils {
     }
 
     static isNotBlank(s:any):boolean {
-        return this.isBlank(s);
+        return !this.isBlank(s);
     }
 
     static isPermisson(s: string): boolean{

@@ -103,6 +103,8 @@
                     ref="menuIds"
                     :accordion=true
                     node-key="id"
+                    :default-expanded-keys = role.menuIds
+                    :default-checked-keys= role.menuIds
                     :props="{children: 'childs', label: 'name'}">
               </el-tree>
           </el-col>
@@ -203,11 +205,38 @@
     add():void{
       this.isList = false;
       this.role = new Role();
+      let ele:any = this.$refs["menuIds"];
+      ele.setCheckedKeys(this.role.menuIds);
     }
     // 修改
     update(index:number, row: Role):void{
+      this.loading = true;
       this.isList = false;
-      this.role = row;
+      this.role = new Role();
+      this.role.id = row.id;
+      this.role.name = row.name;
+      this.role.parentId = row.parentId;
+      let parentRole: Role = this.selectParentRole(this.roles, row.parentId);
+      this.role.parentName = parentRole.name;
+      this.getRoleButton(row.id).then(resp=>{
+        this.role.menuIds = resp;
+        this.loading = false;
+      })
+
+    }
+
+    selectParentRole(roles: Array<Role>, parentId: number):Role{
+      let _this = this;
+      let rest = new Role();
+      roles.forEach((ele:Role)=>{
+        if (ele.id == parentId) {
+          rest = ele;
+        }
+        if (StringUtils.isNotBlank(ele.childs) && StringUtils.isBlank(rest.id)){
+          rest = _this.selectParentRole(ele.childs, parentId);
+        }
+      })
+      return rest;
     }
 
     submitRole (role:string): void {
@@ -258,6 +287,7 @@
       _this.selectRoles.forEach((ele: Role)=>{
         arr.push(ele.id)
       })
+      _this.loading = true;
       _this.axios.delete("/role/delete",{data:arr})
           .then((resp: any)=>{
             if (resp.code == 0){
@@ -272,9 +302,11 @@
       _this.$alert("确认删除这个菜单吗？", "友情提示", {
         confirmButtonText: "确认",
         callback: action => {
+          _this.loading = true;
           _this.axios.delete("/role/delete", {data: [row.id]})
               .then((resp: any) => {
                 if (resp.code == 0) {
+                  _this.loading = false;
                   _this.$message.success("删除成功了！");
                   if (_this.roles.length <= 1 && _this.queryObj.currentPage > 1) {
                     _this.queryObj.currentPage = _this.queryObj.currentPage - 1;
@@ -289,6 +321,15 @@
     setParentId(data: Role,node: any, eml:any): void {
       this.role.parentId = data.id;
       this.role.parentName = data.name;
+      if (data.id != undefined && data.id != null && data.id > 0){
+        let _this = this;
+        _this.axios.get("/menu/perms/"+data.id)
+        .then((resp: any)=>{
+          if (resp.code == 0) {
+            _this.menus = resp.data;
+          }
+        })
+      }
     }
 
     getMenuIds(data: any, eml:any){
@@ -317,7 +358,7 @@
     // 全部菜单
     allMenu(): void {
       let _this = this;
-      _this.axios.get("/menu/perms")
+      _this.axios.get("/menu/perms/0")
       .then((resp: any)=>{
         if (resp.code == 0) {
           _this.menus = resp.data;
@@ -333,6 +374,22 @@
               _this.allRoles = resp.data;
             }
           })
+    }
+
+    getRoleButton(roleId:number):Promise<any> {
+      let _this = this;
+      let menuIds = new Array();
+      return new Promise(function (resolve, reject) {
+        _this.axios.get('/menu/button/'+roleId)
+          .then((resp:any)=>{
+            if (resp.code == 0) {
+              resp.data.forEach((ele:any)=>{
+                menuIds.push(ele.id);
+              })
+            }
+            resolve(menuIds);
+          })
+      });
     }
 
   }

@@ -36,10 +36,10 @@
         }
         loading:boolean = false;
         // http://www.ping-w.com/vueweb
-        kaptcha: string = "http://localhost:8080/api/captcha.jpg?t=" + new Date().getTime();
+        kaptcha: string = "https://www.ping-w.com/vueweb/captcha.jpg?t=" + new Date().getTime();
 
         refreshCode(): void {
-            this.kaptcha = "http://localhost:8080/api/captcha.jpg?t=" + new Date().getTime();
+            this.kaptcha = "https://www.ping-w.com/vueweb/captcha.jpg?t=" + new Date().getTime();
         }
 
         submitClick(): void {
