@@ -1,8 +1,8 @@
 import axios from 'axios'
 import {Message} from 'element-ui'
 
-axios.defaults.baseURL = "/api/";  // 默认地址
-//axios.defaults.baseURL = "https://www.ping-w.com/vueweb";  // 默认地址
+//axios.defaults.baseURL = "/api/";  // 默认地址
+axios.defaults.baseURL = "https://www.ping-w.com/vueweb";  // 默认地址
 axios.defaults.withCredentials = true; // 准许携带cookie信息
 //整理数据
 axios.defaults.transformRequest = function (data) {

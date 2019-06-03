@@ -8,9 +8,9 @@
             {{currentUserName}}<i class="el-icon-arrow-down el-icon--right home_userinfo"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="sysMsg">系统消息</el-dropdown-item>
-            <el-dropdown-item command="MyArticle">我的文章</el-dropdown-item>
-            <el-dropdown-item command="MyHome">个人主页</el-dropdown-item>
+<!--            <el-dropdown-item command="sysMsg">系统消息</el-dropdown-item>-->
+<!--            <el-dropdown-item command="MyArticle">我的文章</el-dropdown-item>-->
+<!--            <el-dropdown-item command="MyHome">个人主页</el-dropdown-item>-->
             <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -19,7 +19,7 @@
     <el-container>
       <el-aside width="200px">
         <el-menu default-active="0" class="el-menu-vertical-demo" style="background-color: #ECECEC" router>
-          <template v-for="(item,index) in this.menus" v-if="!item.hidden">
+          <template v-for="(item,index) in this.menus" v-if="item != null">
             <el-submenu :index="index+''" :key="index">
               <template slot="title">
                 <span :class="item.icon"></span>
@@ -48,13 +48,14 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import {Menu} from "@/entity/Menu";
 //import {StringUtils} from "@/utils/StringUtils";
 //import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 
 @Component({})
 export default class Home extends Vue {
   currentUserName:string = "";
-  menus: Array<object> = [];
+  menus: Array<Menu> = [];
   mounted(){
     const username = localStorage.getItem("username");
     if (username != null) {

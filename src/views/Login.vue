@@ -28,7 +28,7 @@
     @Component({})
     export default class Login extends Vue {
         @Prop() private msg!: string;
-        public user:User = new User("","","");
+        public user:User = new User();
         rules:object = {
             name: [{required: true, message: '请输入用户名', trigger: 'blur'}],
             password: [{required: true, message: '请输入密码', trigger: 'blur'}],

@@ -1,12 +1,14 @@
 export class User {
+    id!: number;
+    name!:string;
+    password!:string;
+    kaptcha!:string;
+    roleIds!:Array<number>;
 
-    private name!:string;
-    private password!:string;
-    private kaptcha!:string;
-
-    constructor(name: string, password: string, kaptcha: string) {
-        this.name = name;
-        this.password = password;
-        this.kaptcha = kaptcha;
+    constructor() {
+        this.name = "";
+        this.password = "";
+        this.kaptcha = "";
+        this.roleIds = [];
     }
 }

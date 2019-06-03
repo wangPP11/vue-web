@@ -299,7 +299,7 @@
 
     closeRole(idnex:number, row: any):void{
       let _this = this;
-      _this.$alert("确认删除这个菜单吗？", "友情提示", {
+      _this.$alert("确认删除这个角色吗？", "友情提示", {
         confirmButtonText: "确认",
         callback: action => {
           _this.loading = true;
