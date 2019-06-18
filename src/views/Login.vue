@@ -38,6 +38,15 @@
         // http://www.ping-w.com/vueweb
         kaptcha: string = "https://www.ping-w.com/vueweb/captcha.jpg?t=" + new Date().getTime();
 
+        mounted():void {
+            console.log(11);
+            this.$alert('账号：tourist，密码：tourist', '游客使用账号', {
+                confirmButtonText: '确定',
+                callback: action => {
+                }
+            });
+        }
+
         refreshCode(): void {
             this.kaptcha = "https://www.ping-w.com/vueweb/captcha.jpg?t=" + new Date().getTime();
         }
